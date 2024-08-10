@@ -8,12 +8,16 @@
   pkgs,
   ...
 }: {
+
+# let
+#   # chicago95 = with pkgs; import ../modules/chicago95/default.nix { inherit lib stdenvNoCC fetchFromGitHub gtk3; };
+#   chicago95 = pkgs.callPackage ../modules/chicago95 {};
+# in {
   # You can import other home-manager modules here
   imports = [
     # If you want to use modules your own flake exports (from modules/home-manager):
     # outputs.homeManagerModules.example
-    ./chicago95
-    ../modules/surfshark.nix
+    # ../modules/surfshark.nix
 
     # Or modules exported from other flakes (such as nix-colors):
     # inputs.nix-colors.homeManagerModules.default
@@ -22,29 +26,29 @@
     # ./nvim.nix
   ];
 
-  nixpkgs = {
-    # You can add overlays here
-    overlays = [
-      # Add overlays your own flake exports (from overlays and pkgs dir):
-      outputs.overlays.additions
-      outputs.overlays.modifications
-      outputs.overlays.unstable-packages
-
-      # You can also add overlays exported from other flakes:
-      # neovim-nightly-overlay.overlays.default
-
-      # Or define it inline, for example:
-      # (final: prev: {
-      #   hi = final.hello.overrideAttrs (oldAttrs: {
-      #     patches = [ ./change-hello-to-hi.patch ];
-      #   });
-      # })
-    ];
-    # Configure your nixpkgs instance
-    config = {
-      allowUnfree = true;
-    };
-  };
+  # nixpkgs = {
+  #   # You can add overlays here
+  #   overlays = [
+  #     # Add overlays your own flake exports (from overlays and pkgs dir):
+  #     # outputs.overlays.additions
+  #     # outputs.overlays.modifications
+  #     # outputs.overlays.unstable-packages
+  #
+  #     # You can also add overlays exported from other flakes:
+  #     # neovim-nightly-overlay.overlays.default
+  #
+  #     # Or define it inline, for example:
+  #     # (final: prev: {
+  #     #   hi = final.hello.overrideAttrs (oldAttrs: {
+  #     #     patches = [ ./change-hello-to-hi.patch ];
+  #     #   });
+  #     # })
+  #   ];
+  #   # Configure your nixpkgs instance
+  #   config = {
+  #     allowUnfree = true;
+  #   };
+  # };
 
   # TODO: Set your username
   home = {
@@ -68,10 +72,10 @@
     # cursorTheme.package = pkgs.bibata-cursors;
     # cursorTheme.name = "Bibata-Modern-Ice";
 
-    theme.package = chicago95;
+    theme.package = pkgs.chicago95;
     theme.name = "Chicago95";
 
-    iconTheme.package = chicago95;
+    iconTheme.package = pkgs.chicago95;
     iconTheme.name = "Chicago95";
   };
 

@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
   src = fetchurl {
     # url = "https://ocean.surfshark.com/debian/pool/main/s/surfshark/surfshark_${version}_amd64.deb";
     url = "https://ocean.surfshark.com/debian/pool/main/s/surfshark_${version}_amd64.deb";
-    sha256 = lib.fakeHash;
+    sha256 = "sha256-U0pG0JlPKMygFV78Yl2UnYECIdPSRGgdxrj0tGse+vg=";
   };
 
 # This bit is the systemd script, but it doesn't work here and needs its own service nix

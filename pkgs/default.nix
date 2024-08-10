@@ -2,4 +2,6 @@
 # You can build them using 'nix build .#example'
 pkgs: {
   # example = pkgs.callPackage ./example { };
+  chicago95 = pkgs.callPackage ../modules/chicago95.nix {};
+  surfshark = pkgs.callPackage ../modules/surfshark.nix {};
 }

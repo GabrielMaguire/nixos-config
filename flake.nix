@@ -1,5 +1,5 @@
 {
-  description = "Your new nix config";
+  description = "NixOS Configuration for Gabriel Maguire";
 
   inputs = {
     # Nixpkgs
@@ -57,6 +57,15 @@
         modules = [
           ./hosts/common-configuration.nix
           ./hosts/laptop/configuration.nix
+
+          home-manager.nixosModules.home-manager {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.gabriel = import ./home-manager/home.nix;
+
+            # Optionally, use home-manager.extraSpecialArgs to pass
+            # arguments to home.nix
+          }
         ];
       };
 
@@ -65,10 +74,20 @@
         modules = [
           ./hosts/common-configuration.nix
           ./hosts/desktop/configuration.nix
+
+          home-manager.nixosModules.home-manager {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.gabriel = import ./home-manager/home.nix;
+
+            # Optionally, use home-manager.extraSpecialArgs to pass
+            # arguments to home.nix
+          }
         ];
       };
     };
 
+    # This doesn't seem to work.
     # Standalone home-manager configuration entrypoint
     # Available through 'home-manager --flake .#your-username@your-hostname'
     homeConfigurations = {
