@@ -8,12 +8,6 @@
   pkgs,
   ...
 }: {
-
-# let
-#   # chicago95 = with pkgs; import ../modules/chicago95/default.nix { inherit lib stdenvNoCC fetchFromGitHub gtk3; };
-#   chicago95 = pkgs.callPackage ../modules/chicago95 {};
-# in {
-  # You can import other home-manager modules here
   imports = [
     # If you want to use modules your own flake exports (from modules/home-manager):
     # outputs.homeManagerModules.example
@@ -50,7 +44,6 @@
   #   };
   # };
 
-  # TODO: Set your username
   home = {
     username = "gabriel";
     homeDirectory = "/home/gabriel";
@@ -58,7 +51,10 @@
 
   # Add stuff for your user as you see fit:
   # programs.neovim.enable = true;
-  # home.packages = with pkgs; [ steam ];
+  home.packages = with pkgs; [
+    # steam
+  ];
+
   qt = {
     enable = true;
     platformTheme.name = "gtk";
@@ -79,12 +75,10 @@
     iconTheme.name = "Chicago95";
   };
 
-  # Enable home-manager and git
-  programs.home-manager.enable = true;
   programs.git.enable = true;
 
   # Nicely reload system units when changing configs
-  systemd.user.startServices = "sd-switch";
+  # systemd.user.startServices = "sd-switch";
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   home.stateVersion = "24.05";

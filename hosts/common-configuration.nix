@@ -129,6 +129,8 @@
     ];
   };
 
+  xdg.icons.enable = true;
+
   fonts.packages = with pkgs; [
     (nerdfonts.override { fonts = [ "Hack" ]; })
   ];
@@ -159,6 +161,11 @@
     };
     wantedBy = [ "multi-user.target" ];
     # ...
+  };
+
+  programs.neovim = {
+    enable = true;
+    defaultEditor = true;
   };
 
   environment.systemPackages = with pkgs; [
@@ -234,6 +241,7 @@
     zip
 
     # Window manager & desktop environment
+    chicago95
     dunst
     grim
     hyprland
@@ -249,12 +257,12 @@
     firefox
     gimp
     htop
+    mpv
     neofetch
     neovim
     signal-desktop
     spotify
     starship
-    # inputs.tmux.packages."${pkgs.system}".tmux
     tmux
     tor
     transmission_4
