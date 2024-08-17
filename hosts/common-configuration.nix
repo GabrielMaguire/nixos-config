@@ -98,7 +98,7 @@
   services.xserver.videoDrivers = [ "nvidia" ];
 
   hardware = {
-    graphics.enable = true;
+    opengl.enable = true;
 
     nvidia = {
       modesetting.enable = true;
@@ -172,7 +172,7 @@
     # Terminal emulators
     alacritty
     kitty
-    
+
     # GUI libraries
     gtk3
     libsForQt5.polkit-kde-agent
@@ -204,6 +204,7 @@
     git
     gnumake
     go
+    jdk
     libcxx
     lldb
     lua
@@ -216,6 +217,9 @@
     rustc
     valgrind
 
+    # System benchmark
+    glmark2
+
     # Wayland libraries
     wayland-protocols
     wayland-utils
@@ -227,6 +231,7 @@
     xwayland
 
     # CLI utilities
+    bc
     eza
     fd
     file
@@ -260,6 +265,7 @@
     mpv
     neofetch
     neovim
+    nvtopPackages.nvidia
     signal-desktop
     spotify
     starship
@@ -270,6 +276,9 @@
     vim
     vlc
     yazi
+
+    # Games
+    prismlauncher # minecraft launcher
 
     # Misc. system
     polkit
