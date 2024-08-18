@@ -276,7 +276,7 @@
     transmission_4-qt
     vim
     vlc
-    yazi
+    unstable.yazi
 
     # Games
     prismlauncher # minecraft launcher
