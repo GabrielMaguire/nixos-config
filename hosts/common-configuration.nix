@@ -135,6 +135,12 @@
     (nerdfonts.override { fonts = [ "Hack" ]; })
   ];
 
+  services.displayManager.sddm = {
+    enable = true;
+    wayland.enable = true;
+    theme = "Chicago95";
+  };
+
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -240,6 +246,7 @@
     lshw
     poppler
     ripgrep
+    tree
     unzip
     usbutils
     wget
@@ -259,13 +266,13 @@
 
     # User programs
     bitwarden-cli
+    feh
     firefox
     gimp
     htop
     mpv
     mullvad-vpn
     neofetch
-    neovim
     nvtopPackages.nvidia
     signal-desktop
     spotify
@@ -274,9 +281,10 @@
     tor
     transmission_4
     transmission_4-qt
+    unstable.neovim
+    unstable.yazi
     vim
     vlc
-    unstable.yazi
 
     # Games
     prismlauncher # minecraft launcher
