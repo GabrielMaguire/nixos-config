@@ -116,6 +116,14 @@
   };
   boot.kernelParams = [ "nvidia.NVreg_PreserveVideoMemoryAllocations=1" ];
 
+  virtualisation.docker = {
+    enable = true;
+    rootless = {
+      enable = true;
+      setSocketVariable = true;
+    };
+  };
+
   services.blueman.enable = true;
 
   security.polkit.enable = true;
@@ -205,6 +213,7 @@
     clang
     clang-tools
     cmake
+    docker
     gcc
     gdb
     git
