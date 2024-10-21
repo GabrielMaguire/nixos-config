@@ -177,11 +177,6 @@
     # ...
   };
 
-  programs.neovim = {
-    enable = true;
-    defaultEditor = true;
-  };
-
   environment.systemPackages = with pkgs; [
     # Terminal emulators
     alacritty
@@ -232,8 +227,12 @@
     rustc
     valgrind
 
+    # NeoVim packages
+    python311Packages.black
+
     # System benchmark
     glmark2
+    sysbench
 
     # Wayland libraries
     wayland-protocols
@@ -275,6 +274,7 @@
 
     # User programs
     bitwarden-cli
+    chromium
     feh
     firefox
     gimp
@@ -283,6 +283,7 @@
     mullvad-vpn
     neofetch
     nvtopPackages.nvidia
+    openshot-qt
     signal-desktop
     spotify
     starship
