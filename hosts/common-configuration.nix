@@ -203,6 +203,7 @@
     nvidia-vaapi-driver
 
     # Development environment
+    asm-lsp
     bear
     cargo
     clang
@@ -214,21 +215,29 @@
     git
     gnumake
     go
+    gopls
     jdk
     libcxx
     lldb
     lua
+    lua-language-server
     luajit
+    marksman
     meson
+    neocmakelsp
+    nodePackages.prettier
     nodejs
     openssl
     pkg-config
+    postman
+    pyright
+    python311Packages.black
     python3Full
     rustc
+    shfmt
+    stylua
     valgrind
-
-    # NeoVim packages
-    python311Packages.black
+    vscode-langservers-extracted
 
     # System benchmark
     glmark2
