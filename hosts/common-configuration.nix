@@ -210,9 +210,11 @@
     clang-tools
     cmake
     docker
+    emmet-ls
     gcc
     gdb
     git
+    gnome.nautilus
     gnumake
     go
     gopls
@@ -225,6 +227,7 @@
     marksman
     meson
     neocmakelsp
+    nodePackages.eslint
     nodePackages.prettier
     nodejs
     openssl
@@ -236,6 +239,7 @@
     rustc
     shfmt
     stylua
+    tailwindcss-language-server
     valgrind
     vscode-langservers-extracted
 
@@ -287,7 +291,7 @@
     feh
     firefox
     gimp
-    htop
+    htop-vim
     mpv
     mullvad-vpn
     neofetch
