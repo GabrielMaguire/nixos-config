@@ -238,6 +238,7 @@
     gnumake
     go
     gopls
+    isort
     jdk
     libcxx
     lldb
@@ -261,6 +262,7 @@
     stylua
     tailwindcss
     tailwindcss-language-server
+    typescript-language-server
     valgrind
     vscode-langservers-extracted
 
