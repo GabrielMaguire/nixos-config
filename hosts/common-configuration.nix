@@ -139,6 +139,16 @@
 
   xdg.icons.enable = true;
 
+  xdg.mime = {
+    enable = true;
+    defaultApplications = {
+      "image/*" = [
+        "feh"
+        "gimp.desktop"
+      ];
+    };
+  };
+
   fonts.packages = with pkgs; [
     (nerdfonts.override { fonts = [ "Hack" ]; })
   ];
@@ -177,6 +187,15 @@
     # ...
   };
 
+  programs.neovim = {
+    enable = true;
+    defaultEditor = true;
+  };
+
+  services.trezord.enable = true;
+
+  programs.adb.enable = true;
+
   environment.systemPackages = with pkgs; [
     # Terminal emulators
     alacritty
@@ -203,6 +222,7 @@
     nvidia-vaapi-driver
 
     # Development environment
+    android-tools
     asm-lsp
     bear
     cargo
@@ -239,6 +259,7 @@
     rustc
     shfmt
     stylua
+    tailwindcss
     tailwindcss-language-server
     valgrind
     vscode-langservers-extracted
@@ -287,27 +308,29 @@
 
     # User programs
     bitwarden-cli
-    chromium
+    unstable.chromium
     feh
-    firefox
+    unstable.firefox
     gimp
     htop-vim
+    inkscape
     mpv
     mullvad-vpn
     neofetch
+    neovim
     nvtopPackages.nvidia
     openshot-qt
-    signal-desktop
+    unstable.signal-desktop
     spotify
     starship
     tmux
     tor
     transmission_4
     transmission_4-qt
-    unstable.neovim
-    unstable.yazi
+    trezor-suite
     vim
     vlc
+    yazi
 
     # Games
     prismlauncher # minecraft launcher
@@ -328,7 +351,7 @@
         # TODO: Add your SSH public key(s) here, if you plan on using SSH to connect
       ];
       # TODO: Be sure to add any other groups you need (such as networkmanager, audio, docker, etc)
-      extraGroups = ["wheel" "docker" "dialout"];
+      extraGroups = ["wheel" "docker" "dialout" "adbusers"];
     };
   };
 
