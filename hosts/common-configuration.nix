@@ -312,7 +312,7 @@
     bitwarden-cli
     unstable.chromium
     feh
-    unstable.firefox
+    firefox
     gimp
     htop-vim
     inkscape
