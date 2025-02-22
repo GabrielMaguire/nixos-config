@@ -98,7 +98,7 @@
   services.xserver.videoDrivers = [ "nvidia" ];
 
   hardware = {
-    opengl.enable = true;
+    graphics.enable = true;
 
     nvidia = {
       modesetting.enable = true;
@@ -202,6 +202,7 @@
     kitty
 
     # GUI libraries
+    adwaita-icon-theme
     gtk3
     libsForQt5.polkit-kde-agent
     libsForQt5.qt5.qtwayland
@@ -234,7 +235,6 @@
     gcc
     gdb
     git
-    gnome.nautilus
     gnumake
     go
     gopls
@@ -247,11 +247,14 @@
     luajit
     marksman
     meson
+    nautilus
     neocmakelsp
+    nixfmt-rfc-style
     nodePackages.eslint
     nodePackages.prettier
     nodejs
     openssl
+    openvpn
     pkg-config
     postman
     pyright
@@ -282,7 +285,9 @@
 
     # CLI utilities
     bc
+    ethtool
     eza
+    conntrack-tools
     fd
     file
     fzf
@@ -290,6 +295,7 @@
     lshw
     poppler
     ripgrep
+    tcpdump
     tree
     unzip
     usbutils
