@@ -268,6 +268,9 @@
     typescript-language-server
     valgrind
     vscode-langservers-extracted
+    zig
+    zig-shell-completions
+    zls
 
     # System benchmark
     glmark2
@@ -285,9 +288,9 @@
 
     # CLI utilities
     bc
+    conntrack-tools
     ethtool
     eza
-    conntrack-tools
     fd
     file
     fzf
@@ -296,6 +299,7 @@
     poppler
     ripgrep
     tcpdump
+    traceroute
     tree
     unzip
     usbutils
