@@ -150,7 +150,7 @@
   };
 
   fonts.packages = with pkgs; [
-    (nerdfonts.override { fonts = [ "Hack" ]; })
+    (nerdfonts.override { fonts = [ "Hack" "CommitMono" "SourceCodePro"]; })
   ];
 
   services.displayManager.sddm = {
@@ -198,8 +198,8 @@
 
   environment.systemPackages = with pkgs; [
     # Terminal emulators
-    alacritty
     kitty
+    unstable.ghostty
 
     # GUI libraries
     adwaita-icon-theme
