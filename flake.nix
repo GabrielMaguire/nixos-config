@@ -2,18 +2,28 @@
   description = "NixOS Configuration for Gabriel Maguire";
 
   inputs = {
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs-signal.url = "github:nixos/nixpkgs/nixos-unstable";
 
-    home-manager.url = "github:nix-community/home-manager/release-24.11";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    home-manager = {
+      url = "github:nix-community/home-manager/release-24.11";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    quickshell = {
+      url = "git+https://git.outfoxxed.me/outfoxxed/quickshell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
     self,
     nixpkgs,
     nixpkgs-unstable,
+    nixpkgs-signal,
     home-manager,
+    quickshell,
     ...
   } @ inputs: let
     inherit (self) outputs;
@@ -46,7 +56,7 @@
     homeManagerModules = import ./modules/home-manager;
 
     # NixOS configuration entrypoint
-    # Available through 'nixos-rebuild --flake .#your-hostname'
+    # Available through 'nixos-rebuild --flake .#laptop' (or #desktop)
     nixosConfigurations = {
       laptop = nixpkgs.lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
@@ -58,9 +68,6 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.gabriel = import ./home-manager/home.nix;
-
-            # Optionally, use home-manager.extraSpecialArgs to pass
-            # arguments to home.nix
           }
         ];
       };
@@ -75,9 +82,6 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.gabriel = import ./home-manager/home.nix;
-
-            # Optionally, use home-manager.extraSpecialArgs to pass
-            # arguments to home.nix
           }
         ];
       };

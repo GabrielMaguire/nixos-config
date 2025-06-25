@@ -65,8 +65,8 @@
   gtk = {
     enable = true;
 
-    # cursorTheme.package = pkgs.bibata-cursors;
-    # cursorTheme.name = "Bibata-Modern-Ice";
+    cursorTheme.package = pkgs.adwaita-icon-theme;
+    cursorTheme.name = "Adwaita";
 
     theme.package = pkgs.chicago95;
     theme.name = "Chicago95";

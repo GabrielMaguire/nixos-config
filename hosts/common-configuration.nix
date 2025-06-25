@@ -7,7 +7,8 @@
   config,
   pkgs,
   ...
-}: {
+}:
+{
   # You can import other NixOS modules here
   imports = [
     # If you want to use modules your own flake exports (from modules/nixos):
@@ -46,30 +47,32 @@
     };
   };
 
-  nix = let
-    flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs;
-  in {
-    settings = {
-      # Enable flakes and new 'nix' command
-      experimental-features = "nix-command flakes";
-      # Opinionated: disable global registry
-      flake-registry = "";
-      # Workaround for https://github.com/NixOS/nix/issues/9574
-      nix-path = config.nix.nixPath;
-    };
-    # Opinionated: disable channels
-    channel.enable = false;
+  nix =
+    let
+      flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs;
+    in
+    {
+      settings = {
+        # Enable flakes and new 'nix' command
+        experimental-features = "nix-command flakes";
+        # Opinionated: disable global registry
+        flake-registry = "";
+        # Workaround for https://github.com/NixOS/nix/issues/9574
+        nix-path = config.nix.nixPath;
+      };
+      # Opinionated: disable channels
+      channel.enable = false;
 
-    # Opinionated: make flake registry and nix path match flake inputs
-    registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs;
-    nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs;
-  };
+      # Opinionated: make flake registry and nix path match flake inputs
+      registry = lib.mapAttrs (_: flake: { inherit flake; }) flakeInputs;
+      nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs;
+    };
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+  networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
 
   time.timeZone = "America/Detroit";
 
@@ -150,14 +153,14 @@
   };
 
   fonts.packages = with pkgs; [
-    (nerdfonts.override { fonts = [ "Hack" "CommitMono" "SourceCodePro"]; })
+    (nerdfonts.override {
+      fonts = [
+        "Hack"
+        "CommitMono"
+        "SourceCodePro"
+      ];
+    })
   ];
-
-  services.displayManager.sddm = {
-    enable = true;
-    wayland.enable = true;
-    theme = "Chicago95";
-  };
 
   services.pipewire = {
     enable = true;
@@ -175,16 +178,10 @@
 
   systemd.user.services.dunst = {
     enable = true;
-    # unitConfig = {
-    #   Type = "simple";
-    #   # ...
-    # };
     serviceConfig = {
       ExecStart = "${pkgs.dunst}/bin/dunst";
-      # ...
     };
     wantedBy = [ "multi-user.target" ];
-    # ...
   };
 
   programs.neovim = {
@@ -196,160 +193,175 @@
 
   programs.adb.enable = true;
 
-  environment.systemPackages = with pkgs; [
-    # Terminal emulators
-    kitty
-    unstable.ghostty
+  environment.systemPackages =
+    let
+      quickshell = inputs.quickshell.packages.${pkgs.system}.default.override {
+        withX11 = false;
+      };
+    in
+    with pkgs;
+    [
+      # Terminal emulators
+      kitty
+      unstable.ghostty
 
-    # GUI libraries
-    adwaita-icon-theme
-    gtk3
-    libsForQt5.polkit-kde-agent
-    libsForQt5.qt5.qtwayland
+      # GUI libraries
+      adwaita-icon-theme
+      gtk3
+      libsForQt5.polkit-kde-agent
+      libsForQt5.qt5.qtwayland
 
-    # LibreOffice
-    hunspell
-    hunspellDicts.en_US
-    libreoffice-qt
+      # LibreOffice
+      hunspell
+      hunspellDicts.en_US
+      libreoffice-qt
 
-    # Audio & video & bluetooth
-    blueman
-    brightnessctl
-    ffmpeg
-    pipewire
-    wireplumber
+      # Audio & video & bluetooth
+      blueman
+      brightnessctl
+      ffmpeg
+      pipewire
+      wireplumber
 
-    # NVIDIA
-    nvidia-vaapi-driver
+      # NVIDIA
+      nvidia-vaapi-driver
 
-    # Development environment
-    android-tools
-    asm-lsp
-    bear
-    cargo
-    clang
-    clang-tools
-    cmake
-    docker
-    emmet-ls
-    gcc
-    gdb
-    git
-    gnumake
-    go
-    gopls
-    isort
-    jdk
-    libcxx
-    lldb
-    lua
-    lua-language-server
-    luajit
-    marksman
-    meson
-    nautilus
-    neocmakelsp
-    nixfmt-rfc-style
-    nodePackages.eslint
-    nodePackages.prettier
-    nodejs
-    openssl
-    openvpn
-    pkg-config
-    postman
-    pyright
-    python311Packages.black
-    python3Full
-    rustc
-    shfmt
-    stylua
-    tailwindcss
-    tailwindcss-language-server
-    typescript-language-server
-    valgrind
-    vscode-langservers-extracted
-    zig
-    zig-shell-completions
-    zls
+      # Development environment
+      android-tools
+      asm-lsp
+      bear
+      cargo
+      clang
+      clang-tools
+      cmake
+      dive
+      docker
+      emmet-ls
+      gcc
+      gdb
+      git
+      gnumake
+      go
+      gopls
+      isort
+      jdk
+      kdePackages.qtdeclarative
+      libcxx
+      lldb
+      lua
+      lua-language-server
+      luajit
+      marksman
+      meson
+      nautilus
+      neocmakelsp
+      nixfmt-rfc-style
+      nodePackages.eslint
+      nodePackages.prettier
+      nodejs
+      openssl
+      openvpn
+      pkg-config
+      postman
+      pyright
+      python311Packages.black
+      python3Full
+      rustc
+      shfmt
+      stylua
+      tailwindcss
+      tailwindcss-language-server
+      typescript-language-server
+      valgrind
+      vscode-langservers-extracted
+      zig
+      zig-shell-completions
+      zls
 
-    # System benchmark
-    glmark2
-    sysbench
+      # System benchmark
+      glmark2
+      sysbench
 
-    # Wayland libraries
-    wayland-protocols
-    wayland-utils
-    wl-clipboard
-    wlr-randr
-    wlroots
-    xdg-desktop-portal-gtk
-    xdg-desktop-portal-hyprland
-    xwayland
+      # Wayland libraries
+      wayland-protocols
+      wayland-utils
+      wl-clipboard
+      wlr-randr
+      wlroots
+      xdg-desktop-portal-gtk
+      xdg-desktop-portal-hyprland
+      xwayland
 
-    # CLI utilities
-    bc
-    conntrack-tools
-    ethtool
-    eza
-    fd
-    file
-    fzf
-    jq
-    lshw
-    poppler
-    ripgrep
-    tcpdump
-    traceroute
-    tree
-    unzip
-    usbutils
-    wget
-    zip
+      # CLI utilities
+      bc
+      conntrack-tools
+      ethtool
+      eza
+      fd
+      file
+      fzf
+      gifsicle
+      jq
+      lshw
+      poppler
+      ripgrep
+      tcpdump
+      tree
+      unzip
+      usbutils
+      wget
+      zip
 
-    # Window manager & desktop environment
-    chicago95
-    dunst
-    grim
-    hyprland
-    kanshi
-    libnotify
-    slurp
-    swww
-    waybar
-    wofi
+      # Window manager & desktop environment
+      chicago95
+      dunst
+      extra-icons
+      grim
+      hyprland
+      hyprland-autoname-workspaces
+      kanshi
+      libnotify
+      quickshell
+      slurp
+      swww
+      waybar
+      wofi
 
-    # User programs
-    bitwarden-cli
-    unstable.chromium
-    feh
-    firefox
-    gimp
-    htop-vim
-    inkscape
-    mpv
-    mullvad-vpn
-    neofetch
-    neovim
-    nvtopPackages.nvidia
-    openshot-qt
-    unstable.signal-desktop
-    spotify
-    starship
-    tmux
-    tor
-    transmission_4
-    transmission_4-qt
-    trezor-suite
-    vim
-    vlc
-    yazi
+      # User programs
+      bitwarden-cli
+      feh
+      firefox
+      gimp
+      google-chrome
+      htop-vim
+      inkscape
+      kdePackages.kdenlive
+      mpv
+      mullvad-vpn
+      neofetch
+      neovim
+      nvtopPackages.nvidia
+      obs-studio
+      spotify
+      starship
+      tmux
+      tor
+      transmission_4
+      transmission_4-qt
+      trezor-suite
+      vim
+      vlc
+      yazi
+      unstable.chromium
+      unstable.openshot-qt # Not working
+      inputs.nixpkgs-signal.legacyPackages.${system}.signal-desktop
 
-    # Games
-    prismlauncher # minecraft launcher
+      # Games
+      prismlauncher # minecraft launcher
 
-    # Misc. system
-    polkit
-  ];
+      # Misc. system
+      polkit
+    ];
 
   # TODO: Configure your system-wide user settings (groups, etc), add more users as needed.
   users.users = {
@@ -363,7 +375,12 @@
         # TODO: Add your SSH public key(s) here, if you plan on using SSH to connect
       ];
       # TODO: Be sure to add any other groups you need (such as networkmanager, audio, docker, etc)
-      extraGroups = ["wheel" "docker" "dialout" "adbusers"];
+      extraGroups = [
+        "wheel"
+        "docker"
+        "dialout"
+        "adbusers"
+      ];
     };
   };
 
