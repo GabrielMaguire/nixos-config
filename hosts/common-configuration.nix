@@ -198,6 +198,8 @@
       quickshell = inputs.quickshell.packages.${pkgs.system}.default.override {
         withX11 = false;
       };
+      zigPkgs = inputs.nixpkgs-zig.legacyPackages.${pkgs.system};
+      inherit (zigPkgs) zig zig-shell-completions zls;
     in
     with pkgs;
     [
@@ -274,6 +276,7 @@
       typescript-language-server
       valgrind
       vscode-langservers-extracted
+      unstable.uv
       zig
       zig-shell-completions
       zls
@@ -323,6 +326,7 @@
       libnotify
       quickshell
       slurp
+      swappy
       swww
       waybar
       wofi
