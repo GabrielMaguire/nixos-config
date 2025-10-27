@@ -68,6 +68,8 @@
       nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs;
     };
 
+  boot.kernelPackages = pkgs.linuxPackages_6_12;
+
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -155,11 +157,13 @@
   fonts.packages = with pkgs; [
     (nerdfonts.override {
       fonts = [
-        "Hack"
         "CommitMono"
+        "Hack"
+        "IBMPlexMono"
         "SourceCodePro"
       ];
     })
+    ibm-plex
   ];
 
   services.pipewire = {
@@ -231,52 +235,70 @@
       # Development environment
       android-tools
       asm-lsp
-      bear
       cargo
-      clang
-      clang-tools
-      cmake
       dive
       docker
-      emmet-ls
-      gcc
-      gdb
       git
       gnumake
-      go
-      gopls
-      isort
       jdk
       kdePackages.qtdeclarative
-      libcxx
-      lldb
-      lua
-      lua-language-server
-      luajit
       marksman
       meson
-      nautilus
-      neocmakelsp
       nixfmt-rfc-style
-      nodePackages.eslint
-      nodePackages.prettier
-      nodejs
       openssl
       openvpn
       pkg-config
       postman
-      pyright
-      python311Packages.black
-      python3Full
       rustc
+      valgrind
+      config.boot.kernelPackages.perf
+      qemu
+      inputs.nixpkgs-25-05.legacyPackages.${system}.qmk
+
+      # Bash
       shfmt
+      shellcheck
+      bash-language-server
+
+      # C/C++
+      bear
+      inputs.nixpkgs-25-05.legacyPackages.${system}.clang_21
+      inputs.nixpkgs-25-05.legacyPackages.${system}.llvmPackages_21.clang-tools
+      cmake
+      neocmakelsp
+      gcc
+      gdb
+      libcxx
+      lldb
+
+      # Go
+      go
+      gopls
+
+      # Lua
+      lua
+      lua-language-server
+      luajit
       stylua
+
+      # Python
+      isort
+      pyright
+      python3Full
+      python311Packages.black
+      unstable.uv
+
+      # HTML/CSS/JS
+      emmet-ls
+      nodePackages.eslint
+      nodePackages.prettier
+      nodejs
       tailwindcss
       tailwindcss-language-server
       typescript-language-server
-      valgrind
       vscode-langservers-extracted
-      unstable.uv
+
+      # Zig
       zig
       zig-shell-completions
       zls
@@ -315,56 +337,54 @@
       wget
       zip
 
-      # Window manager & desktop environment
+      # Window manager & desktop environment & user programs
+      bitwarden-cli
       chicago95
       dunst
       extra-icons
-      grim
-      hyprland
-      hyprland-autoname-workspaces
-      kanshi
-      libnotify
-      quickshell
-      slurp
-      swappy
-      swww
-      waybar
-      wofi
-
-      # User programs
-      bitwarden-cli
       feh
       firefox
       gimp
       google-chrome
+      grim
       htop-vim
+      hyprland
+      hyprland-autoname-workspaces
       inkscape
+      inputs.nixpkgs-25-05.legacyPackages.${system}.yazi
+      inputs.nixpkgs-signal.legacyPackages.${system}.signal-desktop
+      kanshi
       kdePackages.kdenlive
+      libnotify
       mpv
       mullvad-vpn
+      nautilus
       neofetch
       neovim
       nvtopPackages.nvidia
       obs-studio
+      polkit
+      prusa-slicer
+      quickshell
+      slurp
       spotify
       starship
+      swappy
+      swww
       tmux
       tor
       transmission_4
       transmission_4-qt
       trezor-suite
-      vim
-      vlc
-      yazi
       unstable.chromium
       unstable.openshot-qt # Not working
-      inputs.nixpkgs-signal.legacyPackages.${system}.signal-desktop
+      vim
+      vlc
+      waybar
+      wofi
 
       # Games
       prismlauncher # minecraft launcher
-
-      # Misc. system
-      polkit
     ];
 
   # TODO: Configure your system-wide user settings (groups, etc), add more users as needed.

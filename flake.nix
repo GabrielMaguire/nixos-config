@@ -6,6 +6,7 @@
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-signal.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-zig.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs-25-05.url = "github:nixos/nixpkgs/nixos-25.05";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-24.11";
@@ -25,6 +26,7 @@
       nixpkgs-unstable,
       nixpkgs-signal,
       nixpkgs-zig,
+      nixpkgs-25-05,
       home-manager,
       quickshell,
       ...
