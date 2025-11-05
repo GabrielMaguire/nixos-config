@@ -1,5 +1,3 @@
-# This is your system's configuration file.
-# Use this to configure your system environment (it replaces /etc/nixos/configuration.nix)
 {
   inputs,
   outputs,
@@ -9,40 +7,26 @@
   ...
 }:
 {
-  # You can import other NixOS modules here
-  imports = [
-    # If you want to use modules your own flake exports (from modules/nixos):
-    # outputs.nixosModules.example
+  imports = [ inputs.home-manager.nixosModules.home-manager ];
 
-    # Or modules from other flakes (such as nixos-hardware):
-    # inputs.hardware.nixosModules.common-cpu-amd
-    # inputs.hardware.nixosModules.common-ssd
-
-    # You can also split up your configuration and import pieces of it here:
-    # ./users.nix
-  ];
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    users.gabriel = import ./home.nix;
+  };
 
   nixpkgs = {
-    # You can add overlays here
     overlays = [
-      # Add overlays your own flake exports (from overlays and pkgs dir):
-      outputs.overlays.additions
-      outputs.overlays.modifications
-      outputs.overlays.unstable-packages
-
-      # You can also add overlays exported from other flakes:
-      # neovim-nightly-overlay.overlays.default
-
-      # Or define it inline, for example:
-      # (final: prev: {
-      #   hi = final.hello.overrideAttrs (oldAttrs: {
-      #     patches = [ ./change-hello-to-hi.patch ];
-      #   });
-      # })
+      (final: prev: import ../pkgs final)
+      (final: prev: {
+        unstable = import inputs.nixpkgs-unstable {
+          system = final.system;
+          config.allowUnfree = true;
+        };
+      })
     ];
-    # Configure your nixpkgs instance
+
     config = {
-      # Disable if you don't want unfree packages
       allowUnfree = true;
     };
   };
@@ -55,12 +39,14 @@
       settings = {
         # Enable flakes and new 'nix' command
         experimental-features = "nix-command flakes";
-        # Opinionated: disable global registry
+
+        # Disable global registry
         flake-registry = "";
+
         # Workaround for https://github.com/NixOS/nix/issues/9574
         nix-path = config.nix.nixPath;
       };
-      # Opinionated: disable channels
+      # Disable channels
       channel.enable = false;
 
       # Opinionated: make flake registry and nix path match flake inputs
@@ -174,7 +160,7 @@
     jack.enable = true;
   };
 
-  # Enable touchpad support (enabled default in most desktopManager).
+  # Enable touchpad support
   services.libinput = {
     enable = true;
     touchpad.naturalScrolling = true;
@@ -202,8 +188,10 @@
       quickshell = inputs.quickshell.packages.${pkgs.system}.default.override {
         withX11 = false;
       };
+
+      nixos25_05 = inputs.nixpkgs-25-05.legacyPackages.${pkgs.system};
       zigPkgs = inputs.nixpkgs-zig.legacyPackages.${pkgs.system};
-      inherit (zigPkgs) zig zig-shell-completions zls;
+      signalPkgs = inputs.nixpkgs-signal.legacyPackages.${pkgs.system};
     in
     with pkgs;
     [
@@ -244,7 +232,6 @@
       kdePackages.qtdeclarative
       marksman
       meson
-      nixfmt-rfc-style
       openssl
       openvpn
       pkg-config
@@ -253,7 +240,7 @@
       valgrind
       config.boot.kernelPackages.perf
       qemu
-      inputs.nixpkgs-25-05.legacyPackages.${system}.qmk
+      nixos25_05.qmk
 
       # Bash
       shfmt
@@ -262,8 +249,8 @@
 
       # C/C++
       bear
-      inputs.nixpkgs-25-05.legacyPackages.${system}.clang_21
-      inputs.nixpkgs-25-05.legacyPackages.${system}.llvmPackages_21.clang-tools
+      nixos25_05.clang_21
+      nixos25_05.llvmPackages_21.clang-tools
       cmake
       neocmakelsp
       gcc
@@ -280,6 +267,11 @@
       lua-language-server
       luajit
       stylua
+
+      # Nix
+      nil
+      nixd
+      nixfmt-rfc-style
 
       # Python
       isort
@@ -299,9 +291,9 @@
       vscode-langservers-extracted
 
       # Zig
-      zig
-      zig-shell-completions
-      zls
+      zigPkgs.zig
+      zigPkgs.zig-shell-completions
+      zigPkgs.zls
 
       # System benchmark
       glmark2
@@ -351,8 +343,8 @@
       hyprland
       hyprland-autoname-workspaces
       inkscape
-      inputs.nixpkgs-25-05.legacyPackages.${system}.yazi
-      inputs.nixpkgs-signal.legacyPackages.${system}.signal-desktop
+      nixos25_05.yazi
+      signalPkgs.signal-desktop
       kanshi
       kdePackages.kdenlive
       libnotify
@@ -387,18 +379,12 @@
       prismlauncher # minecraft launcher
     ];
 
-  # TODO: Configure your system-wide user settings (groups, etc), add more users as needed.
   users.users = {
     gabriel = {
-      # TODO: You can set an initial password for your user.
-      # If you do, you can skip setting a root password by passing '--no-root-passwd' to nixos-install.
-      # Be sure to change it (using passwd) after rebooting!
-      # initialPassword = "correcthorsebatterystaple";
       isNormalUser = true;
       openssh.authorizedKeys.keys = [
         # TODO: Add your SSH public key(s) here, if you plan on using SSH to connect
       ];
-      # TODO: Be sure to add any other groups you need (such as networkmanager, audio, docker, etc)
       extraGroups = [
         "wheel"
         "docker"
@@ -418,15 +404,10 @@
     extraConfig = "AddKeysToAgent yes";
   };
 
-  # This setups a SSH server. Very important if you're setting up a headless system.
-  # Feel free to remove if you don't need it.
   services.openssh = {
     enable = true;
     settings = {
-      # Opinionated: forbid root login through SSH.
       PermitRootLogin = "no";
-      # Opinionated: use keys only.
-      # Remove if you want to SSH using passwords
       PasswordAuthentication = false;
     };
   };
