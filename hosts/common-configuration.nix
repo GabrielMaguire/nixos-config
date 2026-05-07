@@ -60,9 +60,27 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  swapDevices = [
+    {
+      device = "/var/lib/swapfile";
+      size = 4 * 1024; # 4 GiB
+    }
+  ];
+
+  services.earlyoom = {
+    enable = true;
+    freeSwapThreshold = 2;
+    freeMemThreshold = 2;
+    extraArgs = [
+      "-g"
+      "--avoid '^(Hyprland|kitty|tmux)$'"
+      "--prefer '^(electron|libreoffice|gimp)$'"
+    ];
+  };
+
   networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
 
-  time.timeZone = "America/Detroit";
+  time.timeZone = "America/Los_Angeles";
 
   services.logind.lidSwitch = "ignore";
 
@@ -79,11 +97,6 @@
   };
 
   programs.dconf.enable = true;
-
-  environment.sessionVariables = {
-    WLR_NO_HARDWARE_CURSORS = "1";
-    NIXOS_OZONE_WL = "1";
-  };
 
   services.dbus.enable = true;
   services.xserver.videoDrivers = [ "nvidia" ];
@@ -133,10 +146,13 @@
   xdg.mime = {
     enable = true;
     defaultApplications = {
+      "application/pdf" = "firefox.desktop";
       "image/*" = [
-        "feh"
+        "eog"
         "gimp.desktop"
       ];
+      "text/*" = "nvim";
+      "video/*" = "mpv";
     };
   };
 
@@ -174,6 +190,8 @@
     wantedBy = [ "multi-user.target" ];
   };
 
+  qt.enable = true;
+
   programs.neovim = {
     enable = true;
     defaultEditor = true;
@@ -183,201 +201,219 @@
 
   programs.adb.enable = true;
 
-  environment.systemPackages =
+  environment =
     let
       quickshell = inputs.quickshell.packages.${pkgs.system}.default.override {
         withX11 = false;
       };
-
-      nixos25_05 = inputs.nixpkgs-25-05.legacyPackages.${pkgs.system};
-      zigPkgs = inputs.nixpkgs-zig.legacyPackages.${pkgs.system};
-      signalPkgs = inputs.nixpkgs-signal.legacyPackages.${pkgs.system};
     in
-    with pkgs;
-    [
-      # Terminal emulators
-      kitty
-      unstable.ghostty
+    {
+      sessionVariables = {
+        WLR_NO_HARDWARE_CURSORS = "1";
+        NIXOS_OZONE_WL = "1";
+        QML_IMPORT_PATH = "${pkgs.kdePackages.qtdeclarative}/lib/qt-6/qml/:${quickshell}/lib/qt-6/qml/";
+      };
 
-      # GUI libraries
-      adwaita-icon-theme
-      gtk3
-      libsForQt5.polkit-kde-agent
-      libsForQt5.qt5.qtwayland
+      systemPackages =
+        let
+          zigPkgs = inputs.nixpkgs-zig.legacyPackages.${pkgs.system};
+          inherit (zigPkgs) zig zig-shell-completions zls;
+          signal-desktop = inputs.nixpkgs-signal.legacyPackages.${pkgs.system}.signal-desktop;
+        in
+        with pkgs;
+        [
+          # Terminal emulators
+          kitty
+          unstable.ghostty
 
-      # LibreOffice
-      hunspell
-      hunspellDicts.en_US
-      libreoffice-qt
+          # GUI libraries
+          adwaita-icon-theme
+          gtk3
+          libsForQt5.polkit-kde-agent
+          libsForQt5.qt5.qtwayland
 
-      # Audio & video & bluetooth
-      blueman
-      brightnessctl
-      ffmpeg
-      pipewire
-      wireplumber
+          # LibreOffice
+          hunspell
+          hunspellDicts.en_US
+          libreoffice-qt
 
-      # NVIDIA
-      nvidia-vaapi-driver
+          # Audio & video & bluetooth
+          blueman
+          brightnessctl
+          ffmpeg
+          pipewire
+          wireplumber
 
-      # Development environment
-      android-tools
-      asm-lsp
-      cargo
-      dive
-      docker
-      git
-      gnumake
-      jdk
-      kdePackages.qtdeclarative
-      marksman
-      meson
-      openssl
-      openvpn
-      pkg-config
-      postman
-      rustc
-      valgrind
-      config.boot.kernelPackages.perf
-      qemu
-      nixos25_05.qmk
+          # NVIDIA
+          nvidia-vaapi-driver
 
-      # Bash
-      shfmt
-      shellcheck
-      bash-language-server
+          # Development environment
+          android-tools
+          asm-lsp
+          config.boot.kernelPackages.perf
+          dive
+          docker
+          git
+          gnumake
+          jdk
+          kdePackages.qtdeclarative
+          marksman
+          meson
+          nixos25_05.qmk
+          openssl
+          openvpn
+          pkg-config
+          postman
+          qemu
+          valgrind
 
-      # C/C++
-      bear
-      nixos25_05.clang_21
-      nixos25_05.llvmPackages_21.clang-tools
-      cmake
-      neocmakelsp
-      gcc
-      gdb
-      libcxx
-      lldb
+          # Bash
+          bash-language-server
+          shellcheck
+          shfmt
 
-      # Go
-      go
-      gopls
+          # C/C++
+          bear
+          cmake
+          gcc
+          gdb
+          libcxx
+          lldb
+          neocmakelsp
+          nixos25_05.clang_21
+          nixos25_05.llvmPackages_21.clang-tools
 
-      # Lua
-      lua
-      lua-language-server
-      luajit
-      stylua
+          # Rust
+          cargo
+          rustc
 
-      # Nix
-      nil
-      nixd
-      nixfmt-rfc-style
+          # Lua
+          lua
+          lua-language-server
+          luajit
+          stylua
 
-      # Python
-      isort
-      pyright
-      python3Full
-      python311Packages.black
-      unstable.uv
+          # Python
+          isort
+          pyright
+          python311Packages.black
+          python3Full
+          unstable.uv
 
-      # HTML/CSS/JS
-      emmet-ls
-      nodePackages.eslint
-      nodePackages.prettier
-      nodejs
-      tailwindcss
-      tailwindcss-language-server
-      typescript-language-server
-      vscode-langservers-extracted
+          # Nix
+          nixfmt-rfc-style
+          nil
+          nixd
 
-      # Zig
-      zigPkgs.zig
-      zigPkgs.zig-shell-completions
-      zigPkgs.zls
+          # Go
+          delve
+          go
+          gopls
 
-      # System benchmark
-      glmark2
-      sysbench
+          # HTML/CSS/JS
+          emmet-ls
+          nodePackages.eslint
+          nodePackages.prettier
+          nodejs
+          tailwindcss
+          tailwindcss-language-server
+          typescript-language-server
+          vscode-langservers-extracted
 
-      # Wayland libraries
-      wayland-protocols
-      wayland-utils
-      wl-clipboard
-      wlr-randr
-      wlroots
-      xdg-desktop-portal-gtk
-      xdg-desktop-portal-hyprland
-      xwayland
+          # Zig
+          zig
+          zig-shell-completions
+          zls
 
-      # CLI utilities
-      bc
-      conntrack-tools
-      ethtool
-      eza
-      fd
-      file
-      fzf
-      gifsicle
-      jq
-      lshw
-      poppler
-      ripgrep
-      tcpdump
-      tree
-      unzip
-      usbutils
-      wget
-      zip
+          # System benchmark
+          glmark2
+          sysbench
 
-      # Window manager & desktop environment & user programs
-      bitwarden-cli
-      chicago95
-      dunst
-      extra-icons
-      feh
-      firefox
-      gimp
-      google-chrome
-      grim
-      htop-vim
-      hyprland
-      hyprland-autoname-workspaces
-      inkscape
-      nixos25_05.yazi
-      signalPkgs.signal-desktop
-      kanshi
-      kdePackages.kdenlive
-      libnotify
-      mpv
-      mullvad-vpn
-      nautilus
-      neofetch
-      neovim
-      nvtopPackages.nvidia
-      obs-studio
-      polkit
-      prusa-slicer
-      quickshell
-      slurp
-      spotify
-      starship
-      swappy
-      swww
-      tmux
-      tor
-      transmission_4
-      transmission_4-qt
-      trezor-suite
-      unstable.chromium
-      unstable.openshot-qt # Not working
-      vim
-      vlc
-      waybar
-      wofi
+          # Wayland libraries
+          wayland-protocols
+          wayland-utils
+          wl-clipboard
+          wlr-randr
+          wlroots
+          xdg-desktop-portal-gtk
+          xdg-desktop-portal-hyprland
+          xwayland
 
-      # Games
-      prismlauncher # minecraft launcher
-    ];
+          # CLI utilities
+          bc
+          conntrack-tools
+          ethtool
+          eza
+          fd
+          file
+          gifsicle
+          jq
+          lshw
+          poppler
+          ripgrep
+          tcpdump
+          tree
+          unstable.fzf
+          unzip
+          usbutils
+          wget
+          zip
+
+          # Window manager & desktop environment
+          chicago95
+          dunst
+          extra-icons
+          grim
+          hyprland
+          hyprland-autoname-workspaces
+          kanshi
+          libnotify
+          nixos25_05.yazi
+          quickshell
+          slurp
+          swappy
+          swww
+          waybar
+          wofi
+
+          # User programs
+          bitwarden-cli
+          eog
+          feh
+          firefox
+          gimp
+          google-chrome
+          htop-vim
+          inkscape
+          inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
+          kdePackages.kdenlive
+          mpv
+          mullvad-vpn
+          nautilus
+          neofetch
+          neovim
+          nvtopPackages.nvidia
+          obs-studio
+          signal-desktop
+          spotify
+          starship
+          tmux
+          tor
+          transmission_4
+          transmission_4-qt
+          trezor-suite
+          unstable.chromium
+          unstable.openshot-qt # Not working
+          vim
+          vlc
+
+          # Games
+          prismlauncher # minecraft launcher
+
+          # Misc. system
+          polkit
+        ];
+    };
 
   users.users = {
     gabriel = {
