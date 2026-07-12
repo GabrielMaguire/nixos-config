@@ -24,6 +24,9 @@
           config.allowUnfree = true;
         };
       })
+      (final: prev: {
+        docker = prev.docker_29;
+      })
     ];
 
     config = {
@@ -157,14 +160,10 @@
   };
 
   fonts.packages = with pkgs; [
-    (nerdfonts.override {
-      fonts = [
-        "CommitMono"
-        "Hack"
-        "IBMPlexMono"
-        "SourceCodePro"
-      ];
-    })
+    nerd-fonts.commit-mono
+    nerd-fonts.hack
+    nerd-fonts.blex-mono
+    nerd-fonts.sauce-code-pro
     ibm-plex
   ];
 
@@ -199,7 +198,7 @@
 
   services.trezord.enable = true;
 
-  programs.adb.enable = true;
+  # programs.adb.enable = true;
 
   environment =
     let
@@ -229,7 +228,7 @@
           # GUI libraries
           adwaita-icon-theme
           gtk3
-          libsForQt5.polkit-kde-agent
+          # libsForQt5.polkit-kde-agent
           libsForQt5.qt5.qtwayland
 
           # LibreOffice
@@ -259,12 +258,12 @@
           kdePackages.qtdeclarative
           marksman
           meson
-          nixos25_05.qmk
           openssl
           openvpn
           pkg-config
           postman
           qemu
+          qmk
           valgrind
 
           # Bash
@@ -274,14 +273,14 @@
 
           # C/C++
           bear
+          clang_21
           cmake
           gcc
           gdb
           libcxx
           lldb
+          llvmPackages_21.clang-tools
           neocmakelsp
-          nixos25_05.clang_21
-          nixos25_05.llvmPackages_21.clang-tools
 
           # Rust
           cargo
@@ -296,8 +295,8 @@
           # Python
           isort
           pyright
-          python311Packages.black
-          python3Full
+          python3.pkgs.black
+          python3
           unstable.uv
 
           # Nix
@@ -312,8 +311,8 @@
 
           # HTML/CSS/JS
           emmet-ls
-          nodePackages.eslint
-          nodePackages.prettier
+          eslint
+          prettier
           nodejs
           tailwindcss
           tailwindcss-language-server
@@ -368,13 +367,13 @@
           hyprland-autoname-workspaces
           kanshi
           libnotify
-          nixos25_05.yazi
           quickshell
           slurp
           swappy
           swww
           waybar
           wofi
+          yazi
 
           # User programs
           bitwarden-cli
@@ -390,7 +389,6 @@
           mpv
           mullvad-vpn
           nautilus
-          neofetch
           neovim
           nvtopPackages.nvidia
           obs-studio

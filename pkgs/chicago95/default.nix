@@ -38,6 +38,8 @@ stdenvNoCC.mkDerivation rec {
     runHook postInstall
   '';
 
+  dontCheckForBrokenSymlinks = true;
+
   meta = with lib; {
     description = "Windows 95 theme for linux";
     homepage = "https://github.com/grassmunk/Chicago95";
