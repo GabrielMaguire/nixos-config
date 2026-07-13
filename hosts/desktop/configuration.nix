@@ -13,11 +13,11 @@
 
   networking.hostName = "desktop";
 
-  services.displayManager.sddm = {
-    enable = true;
-    wayland.enable = true;
-    theme = "Chicago95";
-  };
+  # services.displayManager.sddm = {
+  #   enable = true;
+  #   wayland.enable = true;
+  #   theme = "Chicago95";
+  # };
 
   services.openssh = {
     enable = true;
