@@ -6,6 +6,7 @@
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-signal.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-zig.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs-agents.url = "github:nixos/nixpkgs/nixos-unstable";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";

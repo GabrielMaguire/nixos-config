@@ -47,7 +47,17 @@
           (final: prev: import ../pkgs final)
           (final: prev: {
             unstable = import inputs.nixpkgs-unstable {
-              system = final.system;
+              system = final.stdenv.hostPlatform.system;
+              config.allowUnfree = true;
+            };
+            signalPkgs = import inputs.nixpkgs-signal {
+              system = final.stdenv.hostPlatform.system;
+            };
+            # zigPkgs = import inputs.nixpkgs-zig {
+            #   system = final.stdenv.hostPlatform.system;
+            # };
+            agentsPkgs = import inputs.nixpkgs-agents {
+              system = final.stdenv.hostPlatform.system;
               config.allowUnfree = true;
             };
           })
@@ -215,7 +225,7 @@
             gimp
             google-chrome
             inkscape
-            inputs.nixpkgs-signal.legacyPackages.${pkgs.system}.signal-desktop
+            signalPkgs.signal-desktop
             inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
             kdePackages.kdenlive
             mpv
@@ -311,13 +321,14 @@
         alsa.enable = true;
         alsa.support32Bit = true;
         pulse.enable = true;
-        jack.enable = true;
+        jack.enable = false;
       };
 
       environment.systemPackages = with pkgs; [
         blueman
         pipewire
         wireplumber
+        overskride
       ];
     }
 
@@ -329,15 +340,10 @@
         defaultEditor = true;
       };
 
-      services.emacs = {
-        enable = true;
-      };
-
       environment.systemPackages = with pkgs; [
         # Development environment
         asm-lsp
         config.boot.kernelPackages.perf
-        emacs
         ffmpeg
         git
         gnumake
@@ -356,7 +362,6 @@
         qmk
         starship
         tmux
-        unstable.claude-code
         unstable.ghostty
         valgrind
         vim
@@ -422,6 +427,7 @@
         fd
         file
         gifsicle
+        inetutils
         jq
         lshw
         poppler
@@ -435,6 +441,38 @@
         wget
         zip
 
+      ];
+    }
+
+    # -----------------------------------------------------
+    # Coding Agents
+    {
+      environment.systemPackages = with pkgs; [
+        agentsPkgs.claude-code
+        agentsPkgs.codex
+        agentsPkgs.bubblewrap # codex dependency
+      ];
+    }
+
+    # -----------------------------------------------------
+    # Emacs
+    {
+      # For some reason, I need to completely reboot emacs for config updates
+      # to take effect if I use the emacs service.
+      # services.emacs.enable = true; # <- Don't do this.
+
+      documentation = {
+        enable = true;
+        dev.enable = true; # Installs man pages for libraries
+        # man.generateCaches = true; # Generates caches so tools like apropos work
+      };
+
+      environment.systemPackages = with pkgs; [
+        man-pages
+        man-pages-posix
+        liburing
+        emacs
+        # emacsPackages.ghostel
       ];
     }
 
