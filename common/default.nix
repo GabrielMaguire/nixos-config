@@ -209,6 +209,7 @@
             hyprland-autoname-workspaces
             kanshi
             libnotify
+            ncdu
             quickshell
             slurp
             swappy
