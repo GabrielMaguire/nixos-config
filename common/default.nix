@@ -199,6 +199,7 @@
             xwayland
 
             # Window manager & desktop environment
+            awww
             brightnessctl
             chicago95
             dunst
@@ -211,7 +212,7 @@
             quickshell
             slurp
             swappy
-            awww
+            udisks
             waybar
             wofi
             yazi
@@ -512,11 +513,56 @@
     }
 
     # -----------------------------------------------------
+    # Security Key
+    {
+      environment.systemPackages = with pkgs; [
+        yubikey-manager
+        pam_u2f
+      ];
+
+      services.pcscd.enable = true;
+
+      security.pam.u2f = {
+        enable = true;
+        control = "sufficient";
+        settings = {
+          cue = true;
+          origin = "pam://gabriel";
+          appid = "pam://gabriel";
+        };
+      };
+
+      security.pam.services = {
+        sudo.u2fAuth = true;
+        login = {
+          u2fAuth = true;
+          # Login requires password + touch
+          rules.auth.u2f.control = lib.mkForce "required";
+        };
+      };
+    }
+
+    # -----------------------------------------------------
     # SSH
     {
       programs.ssh = {
         startAgent = true;
-        extraConfig = "AddKeysToAgent yes";
+        extraConfig = ''
+          AddKeysToAgent yes
+
+          Host github.com
+            IdentityFile ~/.ssh/id_ed25519_sk
+            IdentityFile ~/.ssh/id_ed25519_sk_travel
+            IdentityAgent none
+            IdentitiesOnly yes
+
+          Host desktop laptop
+            User gabriel
+            IdentityFile ~/.ssh/id_ed25519_sk
+            IdentityFile ~/.ssh/id_ed25519_sk_travel
+            IdentityAgent none
+            IdentitiesOnly yes
+        '';
       };
 
       services.openssh = {
@@ -524,14 +570,27 @@
         settings = {
           PermitRootLogin = "no";
           PasswordAuthentication = false;
+          KbdInteractiveAuthentication = false;
+          AllowUsers = [ "gabriel" ];
         };
       };
 
       users.users.gabriel.openssh = {
         authorizedKeys.keys = [
-          # TODO: Add your SSH public key(s) here, if you plan on using SSH to connect
+          "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIOEXF1SgNGhLEgJNbcdSHPhGgEY0urIoonIaXeR00PWxAAAABHNzaDo= gabrielmaguire"
+          "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIDyLZSBeG/bl4c1GX0OJKBqpzOfmUB8sgTZKTCw4CgsvAAAABHNzaDo= gabrielmaguire@travel"
         ];
       };
+    }
+
+    # -----------------------------------------------------
+    # Tailscale
+    {
+      services.tailscale.enable = true;
+
+      # SSH reachable only over the tailnet
+      services.openssh.openFirewall = false;
+      networking.firewall.interfaces."tailscale0".allowedTCPPorts = [ 22 ];
     }
 
     # -----------------------------------------------------
