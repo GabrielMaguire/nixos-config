@@ -513,75 +513,91 @@
     }
 
     # -----------------------------------------------------
-    # Security Key
-    {
-      environment.systemPackages = with pkgs; [
-        yubikey-manager
-        pam_u2f
-      ];
-
-      services.pcscd.enable = true;
-
-      security.pam.u2f = {
-        enable = true;
-        control = "sufficient";
-        settings = {
-          cue = true;
-          origin = "pam://gabriel";
-          appid = "pam://gabriel";
+    # Security Key / SSH
+    (
+      let
+        yubikeys = {
+          # u2f: pamu2fcfg --nouser --origin=pam://gabriel
+          home = {
+            serial = "37207136";
+            u2f = "djjdbhnIPeOwiDUM1pLwqSk/0RujhyUgA04A5Hy9LFUnkbKbgPZUpUxL8n4J3hNHx3cVEap/sEhzseSYzKwPWA==,dOBOjJhVKOlZ9Wad4hdYXHPCGEFpSubbFk97SHsKF2AcGBodFqfTZILhuCkT3rjAfqbIgcGgzxlBrh+Kz3dY6Q==,es256,+presence";
+            handle = "id_ed25519_sk";
+            sshPublicKey = "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIOEXF1SgNGhLEgJNbcdSHPhGgEY0urIoonIaXeR00PWxAAAABHNzaDo= gabrielmaguire";
+          };
+          travel = {
+            serial = "37206904";
+            u2f = "PXFmwzsD6UI3Kz2t1pzyGmmiR0aokfS6VMQdA2HpNI7BG5OJwCJYirssgymGVvSMlp8hIlxv9MCmGo6D+SIViA==,iLYtrVHUk7pPToW8BqHUUcYHjXSi2/svoJZDqxdXLNu+7GMir+80eyt38JNW5f+nTf/AkID/AuSJcZA1uGJV+Q==,es256,+presence";
+            handle = "id_ed25519_sk_travel";
+            sshPublicKey = "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIDyLZSBeG/bl4c1GX0OJKBqpzOfmUB8sgTZKTCw4CgsvAAAABHNzaDo= gabrielmaguire@travel";
+          };
         };
-      };
-
-      security.pam.services = {
-        sudo.u2fAuth = true;
-        login = {
-          u2fAuth = true;
-          # Login requires password + touch
-          rules.auth.u2f.control = lib.mkForce "required";
-        };
-      };
-    }
-
-    # -----------------------------------------------------
-    # SSH
-    {
-      programs.ssh = {
-        startAgent = true;
-        extraConfig = ''
-          AddKeysToAgent yes
-
-          Host github.com
-            IdentityFile ~/.ssh/id_ed25519_sk
-            IdentityFile ~/.ssh/id_ed25519_sk_travel
-            IdentityAgent none
-            IdentitiesOnly yes
-
-          Host desktop laptop
-            User gabriel
-            IdentityFile ~/.ssh/id_ed25519_sk
-            IdentityFile ~/.ssh/id_ed25519_sk_travel
-            IdentityAgent none
-            IdentitiesOnly yes
-        '';
-      };
-
-      services.openssh = {
-        enable = true;
-        settings = {
-          PermitRootLogin = "no";
-          PasswordAuthentication = false;
-          KbdInteractiveAuthentication = false;
-          AllowUsers = [ "gabriel" ];
-        };
-      };
-
-      users.users.gabriel.openssh = {
-        authorizedKeys.keys = [
-          "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIOEXF1SgNGhLEgJNbcdSHPhGgEY0urIoonIaXeR00PWxAAAABHNzaDo= gabrielmaguire"
-          "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIDyLZSBeG/bl4c1GX0OJKBqpzOfmUB8sgTZKTCw4CgsvAAAABHNzaDo= gabrielmaguire@travel"
+        keys = lib.attrValues yubikeys;
+      in
+      {
+        environment.systemPackages = with pkgs; [
+          yubikey-manager
+          pam_u2f
         ];
-      };
-    }
+
+        services.pcscd.enable = true;
+
+        security.pam.u2f = {
+          enable = true;
+          control = "sufficient"; # touch OR password
+          settings = {
+            cue = true;
+            origin = "pam://gabriel";
+            appid = "pam://gabriel";
+            authfile = pkgs.writeText "u2f_keys" "gabriel:${lib.concatStringsSep ":" (map (k: k.u2f) keys)}\n";
+          };
+        };
+
+        security.pam.services = {
+          sudo.u2fAuth = true;
+          login = {
+            u2fAuth = true;
+            # Upgrade login to require touch AND password
+            rules.auth.u2f.control = lib.mkForce "required";
+          };
+        };
+
+        programs.ssh = {
+          startAgent = true;
+          extraConfig = ''
+            ${lib.concatMapStrings (k: ''
+              Match exec "ykman list --serials | grep -qx ${k.serial}"
+                IdentityFile ~/.ssh/${k.handle}
+            '') keys}
+
+            AddKeysToAgent yes
+
+            Host *
+              IdentityAgent none
+              IdentitiesOnly yes
+              ControlMaster auto
+              ControlPath ~/.ssh/cm-%C
+              ControlPersist 10m
+
+            Host desktop laptop
+              User gabriel
+          '';
+        };
+
+        services.openssh = {
+          enable = true;
+          settings = {
+            PermitRootLogin = "no";
+            PasswordAuthentication = false;
+            KbdInteractiveAuthentication = false;
+            AllowUsers = [ "gabriel" ];
+          };
+        };
+
+        users.users.gabriel.openssh = {
+          authorizedKeys.keys = map (k: k.sshPublicKey) keys;
+        };
+      }
+    )
 
     # -----------------------------------------------------
     # Tailscale
