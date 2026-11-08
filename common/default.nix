@@ -343,12 +343,12 @@
       environment.systemPackages = with pkgs; [
         # Development environment
         asm-lsp
-        perf
         ffmpeg
         git
         gnumake
         htop-vim
         jdk
+        jujutsu
         kdePackages.qtdeclarative
         kitty
         marksman
@@ -356,6 +356,7 @@
         neovim
         openssl
         openvpn
+        perf
         pkg-config
         postman
         qemu
