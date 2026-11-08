@@ -36,26 +36,15 @@
     in
     {
       # Accessible through 'nix build', 'nix shell', etc
-      packages.${system} = import ./pkgs nixpkgs.legacyPackages.${system};
+      packages.${system} = import ../../pkgs nixpkgs.legacyPackages.${system};
 
-      # NixOS configuration entrypoint
-      # Available through 'nixos-rebuild --flake .#laptop' (or #desktop)
-      nixosConfigurations = {
-        laptop = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs outputs; };
-          modules = [
-            ./hosts/common-configuration.nix
-            ./hosts/laptop/configuration.nix
-          ];
-        };
-
-        desktop = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs outputs; };
-          modules = [
-            ./hosts/common-configuration.nix
-            ./hosts/desktop/configuration.nix
-          ];
-        };
+      # Rebuild with: nixos-rebuild switch --flake ./hosts/laptop
+      nixosConfigurations.laptop = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs outputs; };
+        modules = [
+          ../../common
+          ./configuration.nix
+        ];
       };
     };
 }

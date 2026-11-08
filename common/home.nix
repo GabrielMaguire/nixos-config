@@ -71,6 +71,9 @@
     theme.package = pkgs.chicago95;
     theme.name = "Chicago95";
 
+    # Preserve GTK4 theming explicitly across Home Manager default changes.
+    gtk4.theme = config.gtk.theme;
+
     iconTheme.package = pkgs.chicago95;
     iconTheme.name = "Chicago95";
   };

@@ -96,7 +96,7 @@
 
       time.timeZone = "America/Los_Angeles";
 
-      services.logind.lidSwitch = "ignore";
+      services.logind.settings.Login.HandleLidSwitch = "ignore";
 
       users.users = {
         gabriel = {
@@ -163,7 +163,7 @@
 
       environment =
         let
-          quickshell = inputs.quickshell.packages.${pkgs.system}.default.override {
+          quickshell = inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default.override {
             withX11 = false;
           };
         in
@@ -211,7 +211,7 @@
             quickshell
             slurp
             swappy
-            swww
+            awww
             waybar
             wofi
             yazi
@@ -343,7 +343,7 @@
       environment.systemPackages = with pkgs; [
         # Development environment
         asm-lsp
-        config.boot.kernelPackages.perf
+        perf
         ffmpeg
         git
         gnumake
@@ -400,7 +400,7 @@
         unstable.uv
 
         # Nix
-        nixfmt-rfc-style
+        nixfmt
         nil
         nixd
 
@@ -556,7 +556,7 @@
     {
       environment.systemPackages =
         let
-          zigPkgs = inputs.nixpkgs-zig.legacyPackages.${pkgs.system};
+          zigPkgs = inputs.nixpkgs-zig.legacyPackages.${pkgs.stdenv.hostPlatform.system};
           inherit (zigPkgs) zig zig-shell-completions zls;
         in
         [
