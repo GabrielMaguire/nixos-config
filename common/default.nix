@@ -362,6 +362,7 @@
         postman
         qemu
         qmk
+        raddebugger
         starship
         tmux
         unstable.ghostty
